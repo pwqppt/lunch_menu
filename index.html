@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>점심 메뉴 추천 프로그램</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 28rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem 1.5rem 1rem;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
+        .card-description {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .card-content {
+            padding: 0 1.5rem;
+        }
+
+        .tabs {
+            margin-bottom: 1.5rem;
+        }
+
+        .tabs-list {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            width: 100%;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background-color: #f1f5f9;
+        }
+
+        .tab-trigger {
+            padding: 0.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: background-color 0.3s, color 0.3s;
+            color: #64748b;
+        }
+
+        .tab-trigger.active {
+            background-color: white;
+            color: #0f172a;
+            font-weight: 500;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .food-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            text-align: center;
+            min-height: 200px;
+            background-color: #f8fafc;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #94a3b8;
+        }
+
+        .utensils-icon {
+            margin-bottom: 1rem;
+            color: #94a3b8;
+        }
+
+        .food-name {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1e293b;
+        }
+
+        .food-description {
+            color: #64748b;
+        }
+
+        .card-footer {
+            padding: 1.5rem;
+        }
+
+        .recommend-button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1rem;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .recommend-button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .refresh-icon {
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">오늘의 점심 메뉴 추천</h1>
+                <p class="card-description">버튼을 클릭하여 점심 메뉴를 추천받으세요</p>
+            </div>
+
+            <div class="card-content">
+                <div class="tabs">
+                    <div class="tabs-list">
+                        <button class="tab-trigger active" data-value="korean">한식</button>
+                        <button class="tab-trigger" data-value="western">양식</button>
+                        <button class="tab-trigger" data-value="chinese">중식</button>
+                        <button class="tab-trigger" data-value="japanese">일식</button>
+                    </div>
+                </div>
+
+                <div class="food-display">
+                    <div class="empty-state">
+                        <div class="utensils-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"></path>
+                                <path d="M7 2v20"></path>
+                                <path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"></path>
+                            </svg>
+                        </div>
+                        <p>버튼을 클릭하여 메뉴를 추천받으세요</p>
+                    </div>
+                    <div class="food-result" style="display: none;">
+                        <h3 class="food-name"></h3>
+                        <p class="food-description"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <button class="recommend-button">
+                    <svg class="refresh-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                        <path d="M21 3v5h-5"></path>
+                        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                        <path d="M3 21v-5h5"></path>
+                    </svg>
+                    메뉴 추천받기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 한식 메뉴 데이터
+        const koreanFood = [
+            { name: "비빔밥", description: "다양한 나물과 고기를 밥 위에 올리고 고추장과 함께 비벼 먹는 음식" },
+            { name: "김치찌개", description: "김치와 돼지고기 등을 넣고 끓인 매콤한 찌개" },
+            { name: "된장찌개", description: "된장을 풀어 두부, 채소 등을 넣고 끓인 찌개" },
+            { name: "불고기", description: "양념한 쇠고기를 구워 먹는 요리" },
+            { name: "제육볶음", description: "고추장 양념에 돼지고기를 볶은 매콤한 요리" },
+            { name: "떡볶이", description: "떡과 어묵을 고추장 양념에 볶은 매콤달콤한 분식" },
+            { name: "순두부찌개", description: "순두부와 해산물 등을 넣고 끓인 얼큰한 찌개" },
+            { name: "갈비탕", description: "소갈비를 넣고 오래 끓인 국물 요리" },
+            { name: "냉면", description: "차가운 국물에 메밀면을 말아 먹는 요리" },
+            { name: "삼겹살", description: "돼지고기 삼겹살을 구워 쌈과 함께 먹는 요리" },
+        ];
+
+        // 양식 메뉴 데이터
+        const westernFood = [
+            { name: "파스타", description: "다양한 소스와 함께 즐기는 이탈리아 면 요리" },
+            { name: "피자", description: "토핑을 얹어 구운 이탈리아 빵 요리" },
+            { name: "햄버거", description: "패티와 다양한 재료를 빵 사이에 넣은 샌드위치" },
+            { name: "스테이크", description: "소고기를 구워 먹는 요리" },
+            { name: "샐러드", description: "신선한 채소와 드레싱을 곁들인 요리" },
+            { name: "샌드위치", description: "빵 사이에 다양한 재료를 넣은 간편식" },
+            { name: "리조또", description: "쌀을 천천히 끓여 만든 이탈리아 요리" },
+            { name: "오믈렛", description: "계란을 부쳐 다양한 재료를 넣은 요리" },
+            { name: "치킨", description: "닭고기를 튀기거나 구운 요리" },
+            { name: "타코", description: "토르티야에 고기와 채소를 넣은 멕시코 요리" },
+        ];
+
+        // 중식 메뉴 데이터
+        const chineseFood = [
+            { name: "짜장면", description: "춘장 소스에 면을 비벼 먹는 중국식 요리" },
+            { name: "짬뽕", description: "해산물과 채소가 들어간 매운 국물 요리" },
+            { name: "탕수육", description: "돼지고기를 튀겨 새콤달콤한 소스를 곁들인 요리" },
+            { name: "마파두부", description: "두부와 다진 고기를 매운 소스로 볶은 요리" },
+            { name: "양장피", description: "해파리와 채소, 고기를 함께 버무린 냉채 요리" },
+            { name: "깐풍기", description: "닭고기를 튀겨 매콤한 소스를 곁들인 요리" },
+            { name: "유린기", description: "닭고기를 튀겨 새콤한 소스를 곁들인 요리" },
+            { name: "고추잡채", description: "채소와 고기를 볶아 만든 요리" },
+            { name: "팔보채", description: "해산물과 채소를 함께 볶은 요리" },
+            { name: "양꼬치", description: "양고기를 꼬치에 꿰어 구운 요리" },
+        ];
+
+        // 일식 메뉴 데이터
+        const japaneseFood = [
+            { name: "초밥", description: "식초를 섞은 밥 위에 생선이나 해산물을 얹은 요리" },
+            { name: "라멘", description: "국물과 면, 다양한 토핑으로 구성된 일본식 면 요리" },
+            { name: "돈카츠", description: "돼지고기를 튀겨 소스와 함께 먹는 요리" },
+            { name: "우동", description: "두꺼운 밀가루 면을 국물에 말아 먹는 요리" },
+            { name: "오니기리", description: "밥을 뭉쳐 속재료를 넣고 김으로 감싼 요리" },
+            { name: "덮밥", description: "밥 위에 다양한 재료를 얹은 요리" },
+            { name: "오코노미야키", description: "밀가루 반죽에 다양한 재료를 넣어 구운 일본식 부침개" },
+            { name: "규동", description: "소고기를 달콤한 간장 소스로 조려 밥 위에 얹은 요리" },
+            { name: "가츠동", description: "돈카츠를 달걀과 함께 조려 밥 위에 얹은 요리" },
+            { name: "타코야키", description: "문어 조각을 넣어 동그랗게 구운 간식" },
+        ];
+
+        // 현재 선택된 요리 타입
+        let currentCuisine = 'korean';
+
+        // DOM 요소 가져오기
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabTriggers = document.querySelectorAll('.tab-trigger');
+            const recommendButton = document.querySelector('.recommend-button');
+            const emptyState = document.querySelector('.empty-state');
+            const foodResult = document.querySelector('.food-result');
+            const foodName = document.querySelector('.food-name');
+            const foodDescription = document.querySelector('.food-description');
+
+            // 탭 클릭 이벤트 처리
+            tabTriggers.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 활성 탭 클래스 제거
+                    tabTriggers.forEach(t => t.classList.remove('active'));
+                    // 클릭한 탭에 활성 클래스 추가
+                    tab.classList.add('active');
+                    // 현재 요리 타입 업데이트
+                    currentCuisine = tab.dataset.value;
+                });
+            });
+
+            // 추천 버튼 클릭 이벤트 처리
+            recommendButton.addEventListener('click', () => {
+                // 현재 선택된 요리 타입에 따라 음식 데이터 가져오기
+                let foods;
+                switch (currentCuisine) {
+                    case 'korean':
+                        foods = koreanFood;
+                        break;
+                    case 'western':
+                        foods = westernFood;
+                        break;
+                    case 'chinese':
+                        foods = chineseFood;
+                        break;
+                    case 'japanese':
+                        foods = japaneseFood;
+                        break;
+                    default:
+                        foods = koreanFood;
+                }
+
+                // 랜덤 음식 선택
+                const randomIndex = Math.floor(Math.random() * foods.length);
+                const selectedFood = foods[randomIndex];
+
+                // UI 업데이트
+                foodName.textContent = selectedFood.name;
+                foodDescription.textContent = selectedFood.description;
+                
+                // 빈 상태 숨기고 결과 표시
+                emptyState.style.display = 'none';
+                foodResult.style.display = 'block';
+            });
+        });
+    </script>
+</body>
+</html>
